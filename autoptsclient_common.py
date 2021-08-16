@@ -57,7 +57,7 @@ TEST_CASE_DB = None
 
 autoprojects = None
 
-profiles = {'dis', 'gap', 'gatt', 'sm', 'l2cap', 'mesh', 'mmdl'}
+profiles = {'gap', 'gatt', 'sm', 'l2cap'}
 
 # To test autopts client locally:
 # Envrinment variable AUTO_PTS_LOCAL must be set for FakeProxy to

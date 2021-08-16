@@ -22,6 +22,9 @@ import sys
 import time
 import datetime
 import collections
+from argparse import Namespace
+from git import Repo
+
 import serial
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
@@ -49,11 +52,11 @@ def check_call(cmd, env=None, cwd=None, shell=True):
     return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable=executable)
 
 
-def build_and_flash(zephyr_wd, board, tty, conf_file=None):
+def build_and_flash(zephyr_wd, board, jlink_srn, conf_file=None):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
     :param board: IUT
-    :param tty path
+    :param jlink_srn
     :param conf_file: configuration file to be used
     """
     logging.debug("%s: %s %s %s", build_and_flash.__name__, zephyr_wd,
@@ -62,7 +65,31 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
 
     check_call('rm -rf build/'.split(), cwd=tester_dir)
 
-    cmd = ['west', 'build', '-p', 'auto', '-b', board]
+    # If nrf53 power-cycled, use the hack to fix hw_flow_control --BEGIN
+    if board == 'nrf53' and conf_file == 'prj.conf':
+        repo = Repo(zephyr_wd)
+        nrf5340_overlay_conf = os.path.join(zephyr_wd, 'tests', 'bluetooth',
+                                            'tester', 'nrf5340dk_nrf5340_cpuapp.overlay')
+        if repo.is_dirty(path=nrf5340_overlay_conf):
+            repo.index.checkout(paths=nrf5340_overlay_conf, force=True)
+
+        lines = []
+        with open(nrf5340_overlay_conf, 'r') as file:
+            lines = file.readlines()
+            lines = lines[:-2]
+            lines.append('};')
+        with open(nrf5340_overlay_conf, 'w') as file:
+            file.writelines(lines)
+
+        cmd = ['west', 'build', '-p', 'always', '-b', board]
+        check_call(cmd, cwd=tester_dir)
+        check_call(['west', 'flash', '--recover', '--erase', '--skip-rebuild',
+                    '--snr', jlink_srn], cwd=tester_dir)
+
+        repo.index.checkout(paths=nrf5340_overlay_conf, force=True)
+    # --END
+
+    cmd = ['west',  'build', '-p', 'always', '-b', board]
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
         cmd.extend(('--', '-DOVERLAY_CONFIG={}'.format(conf_file)))
 
@@ -71,8 +98,8 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
         cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
 
     check_call(cmd, cwd=tester_dir)
-    check_call(['west', 'flash', '--skip-rebuild',
-                '--board-dir', tty], cwd=tester_dir)
+    check_call(['west', 'flash', '--recover', '--erase', '--skip-rebuild',
+                '--snr', jlink_srn], cwd=tester_dir)
 
 
 def flush_serial(tty):
@@ -117,7 +144,8 @@ def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
 autopts2board = {
     None: None,
     'nrf52': 'nrf52840dk_nrf52840',
-    'reel_board': 'reel_board'
+    'nrf53': 'nrf5340dk_nrf5340_cpuapp',
+    'reel_board' : 'reel_board'
 }
 
 
@@ -155,6 +183,104 @@ def zephyr_hash_url(commit):
     """
     return "{}/commit/{}".format(autoprojects.ZEPHYR_PROJECT_URL,
                                  commit)
+class PtsInitArgs:
+    """
+    Translates arguments provided in 'config.py' file to be used by
+    'autoptsclient.init_pts' function
+    """
+
+    def __init__(self, args):
+        self.workspace = args["workspace"]
+        self.bd_addr = args["bd_addr"]
+        self.enable_max_logs = args.get('enable_max_logs', False)
+        self.retry = args.get('retry', 0)
+        self.stress_test = args.get('stress_test', False)
+        self.test_cases = []
+        self.excluded = []
+        self.srv_port = args.get('srv_port', [65000])
+        self.cli_port = args.get('cli_port', [65001])
+        self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))
+        self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
+        self.ykush = args.get('ykush', None)
+        self.recovery = args.get('recovery', False)
+        self.superguard = 60 * float(args.get('superguard', 0))
+
+
+def run_tests(args, iut_config, tty, jlink_srn):
+    """Run test cases
+    :param args: AutoPTS arguments
+    :param iut_config: IUT configuration
+    :param tty path
+    :return: tuple of (status, results) dictionaries
+    """
+    results = {}
+    status = {}
+    descriptions = {}
+    total_regressions = []
+    _args = {}
+
+    config_default = "prj.conf"
+    _args[config_default] = PtsInitArgs(args)
+
+    for config, value in list(iut_config.items()):
+        if 'test_cases' not in value:
+            # Rename default config
+            _args[config] = _args.pop(config_default)
+            config_default = config
+            continue
+
+        if config != config_default:
+            _args[config] = PtsInitArgs(args)
+
+        _args[config].test_cases = value.get('test_cases', [])
+
+        if 'overlay' in value:
+            _args[config_default].excluded += _args[config].test_cases
+
+    while True:
+        try:
+            ptses = autoptsclient.init_pts(_args[config_default],
+                                           "zephyr_" + str(args["board"]))
+
+            btp.init(get_iut)
+
+            # Main instance of PTS
+            pts = ptses[0]
+
+            # Read PTS Version and keep it for later use
+            args['pts_ver'] = "%s" % pts.get_version()
+        except Exception as exc:
+            logging.exception(exc)
+            if _args[config_default].recovery:
+                ptses = exc.args[1]
+                for pts in ptses:
+                    autoptsclient.recover_autoptsserver(pts)
+                time.sleep(20)
+                continue
+            raise exc
+        break
+
+    stack.init_stack()
+    stack_inst = stack.get_stack()
+    stack_inst.synch_init([pts.callback_thread for pts in ptses])
+
+    for config, value in list(iut_config.items()):
+        if 'overlay' in value:
+            apply_overlay(args["project_path"], config_default, config,
+                          value['overlay'])
+
+        build_and_flash(args["project_path"],
+                        autopts2board[args["board"]],
+                        jlink_srn,
+                        config)
+        logging.debug("TTY path: %s", tty)
+
+        flush_serial(tty)
+        time.sleep(10)
+
+        autoprojects.iutctl.init(Namespace(kernel_image=args["kernel_image"],
+                                           tty_file=tty, board=args["board"],
+                                           hci=None, rtt2pty=None))
 
 
 def make_readme_md(start_time, end_time, commit_sha, pts_ver):
@@ -292,11 +418,11 @@ def main(cfg):
         autoptsclient.board_power(args['ykush'], True)
         time.sleep(1)
 
-    args['tty_file'], jlink_srn = bot.common.get_free_device()
+    tty, jlink_srn = bot.common.get_free_device(args['board'])
 
     try:
         summary, results, descriptions, regressions = \
-            ZephyrBotClient().run_tests(args, cfg.get('iut_config', {}))
+            run_tests(args, cfg.get('iut_config', {}), tty, jlink_srn)
     except Exception as e:
         bot.common.release_device(jlink_srn)
         raise e
