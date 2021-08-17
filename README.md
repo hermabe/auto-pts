@@ -189,6 +189,7 @@ This may contain few sections:
     - `retry` - maximum repeat count per test
     - `stress test` - repeat every test `retry` number of times, even if result was PASS
     - `bd_addr` - IUT Bluetooth Address (optional)
+    - `rtt2pty` - enable RTT logs
     - `recovery` - enable recovery after non-valid result (optional)
     - `superguard` - force recovery when server has been idle for the given time (optional)
     - `ykush` - reconnect board/PTS dongle during recovery, if YKUSH Switchable Hub is used (optional)
