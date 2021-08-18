@@ -59,15 +59,14 @@ class ZephyrCtl:
             self.__class__, self.__init__.__name__, args.kernel_image,
             args.tty_file, args.board_name)
 
-        self.debugger_snr = None
+        self.debugger_snr = args.jlink_srn
         self.kernel_image = args.kernel_image
         self.tty_file = args.tty_file
         self.hci = args.hci
         self.native = None
 
-        if self.tty_file and args.board_name:  # DUT is a hardware board, not QEMU
-            self.debugger_snr = get_debugger_snr(self.tty_file)
-            self.board = Board(args.board_name, args.kernel_image, self)
+        if self.tty_file and args.board:  # DUT is a hardware board, not QEMU
+            self.board = Board(args.board, args.kernel_image, self)
         else:  # DUT is QEMU or a board that won't be reset
             self.board = None
 
@@ -83,8 +82,12 @@ class ZephyrCtl:
         else:
             self.btp_address = BTP_ADDRESS
 
-        self.rtt_logger = RTT() if args.rtt_log else None
-        self.btmon = BTMON() if args.btmon else None
+        if args.rtt2pty:
+            self.rtt2pty = RTT2PTY()
+            self.btmon = BTMON()
+        else:
+            self.rtt2pty = None
+            self.btmon = None
 
     def start(self, test_case):
         """Starts the Zephyr OS"""

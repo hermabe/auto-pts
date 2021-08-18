@@ -283,7 +283,8 @@ def run_tests(args, iut_config, tty, jlink_srn):
 
         autoprojects.iutctl.init(Namespace(kernel_image=args["kernel_image"],
                                            tty_file=tty, board=args["board"],
-                                           hci=None, rtt2pty=args["rtt2pty"]))
+                                           jlink_srn=jlink_srn, hci=None,
+                                           rtt2pty=args["rtt2pty"]))
 
 
 def make_readme_md(start_time, end_time, commit_sha, pts_ver):
