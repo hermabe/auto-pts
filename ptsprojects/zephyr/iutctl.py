@@ -84,7 +84,8 @@ class ZephyrCtl:
 
         if args.rtt2pty:
             self.rtt2pty = RTT2PTY()
-            self.btmon = BTMON()
+            # self.btmon = BTMON()
+            self.btmon = None
         else:
             self.rtt2pty = None
             self.btmon = None
