@@ -259,6 +259,10 @@ def run_tests(args, iut_config, tty, jlink_srn):
     stack_inst.synch_init([pts.callback_thread for pts in ptses])
 
     for config, value in list(iut_config.items()):
+        if 'test_cases' in value and 'no_test_case' in value['test_cases']:
+            # Do not build overlays with no test cases
+            continue
+
         if 'overlay' in value:
             apply_overlay(args["project_path"], config_default, config,
                           value['overlay'])
