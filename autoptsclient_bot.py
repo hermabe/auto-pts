@@ -75,7 +75,11 @@ if __name__ == "__main__":
         sys.exit(0)
     except KeyboardInterrupt:  # Ctrl-C
         sys.exit(14)
-    except SystemExit:
+    except SystemExit as e:
+        logging.exception(e)
+        import traceback
+
+        traceback.print_exc()
         raise
     except BaseException as e:
         logging.exception(e)

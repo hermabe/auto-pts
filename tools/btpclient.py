@@ -931,7 +931,8 @@ def main():
         sys.exit("")
 
     # SystemExit is thrown in arg_parser.parse_args and in sys.exit
-    except SystemExit:
+    except SystemExit as e:
+        print(e)
         raise  # let the default handlers do the work
 
     except BaseException:
