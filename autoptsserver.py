@@ -86,7 +86,7 @@ class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
 
         self.client_xmlrpc_proxy = xmlrpc.client.ServerProxy(
             "http://{}:{}/".format(self.client_address, self.client_port),
-            allow_none=True)
+            allow_none=True, verbose=True)
 
         log("Created XMR RPC auto-pts client proxy, provides methods: %s" %
             self.client_xmlrpc_proxy.system.listMethods())

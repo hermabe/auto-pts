@@ -427,7 +427,7 @@ def init_pts(args, tc_db_table_name=None):
         else:
             proxy = xmlrpc.client.ServerProxy(
                 "http://{}:{}/".format(server_addr, server_port),
-                allow_none=True, )
+                allow_none=True, verbose=True)
 
         print("(%r) Starting PTS %s:%s ..." % (id(proxy), server_addr, server_port))
 
