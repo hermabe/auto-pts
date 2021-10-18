@@ -24,7 +24,7 @@ from ptsprojects.stack import get_stack
 
 # Mesh ATS ver. 1.0
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 
 def hdl_pending_mesh_wids(wid, test_case_name, description):

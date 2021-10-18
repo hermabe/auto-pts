@@ -46,7 +46,7 @@ import ptsprojects.ptstypes as ptstypes
 clr.AddReferenceToFile("Interop.PTSControl.dll")
 
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 
 class PyPTSControl:

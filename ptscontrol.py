@@ -51,7 +51,7 @@ import wmi
 
 import ptsprojects.ptstypes as ptstypes
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 logtype_whitelist = [ptstypes.PTS_LOGTYPE_START_TEST,
                      ptstypes.PTS_LOGTYPE_END_TEST,
@@ -73,7 +73,7 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
         super().__init__()
 
         self._callback = None
-        self._maximum_logging = False
+        self._maximum_logging = True
         self._test_case_name = None
 
     def set_callback(self, callback):
@@ -86,7 +86,7 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
 
     def enable_maximum_logging(self, enable):
         """Enable/disable maximum logging"""
-        self._maximum_logging = enable
+        self._maximum_logging = True
 
     def set_test_case_name(self, test_case_name):
         """Required to identify multiple instances on client side"""
@@ -733,7 +733,7 @@ class PyPTS:
 
     def enable_maximum_logging(self, enable):
         """Enables/disables the maximum logging."""
-
+        enable = True
         log("%s %s", self.enable_maximum_logging.__name__, enable)
         self._pts.EnableMaximumLogging(enable)
         self._pts_logger.enable_maximum_logging(enable)

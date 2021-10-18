@@ -22,7 +22,7 @@ from pybtp import defs
 from pybtp.types import BTPError
 from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 IUT = None
 
 # IUT log file object

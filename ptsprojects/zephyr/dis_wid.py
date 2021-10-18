@@ -19,7 +19,7 @@ import sys
 
 from wid.dis import dis_wid_hdl as gen_wid_hdl
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 
 def dis_wid_hdl(wid, description, test_case_name):

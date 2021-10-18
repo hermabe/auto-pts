@@ -83,7 +83,7 @@ def get_my_name():
 class Completer:
     def __init__(self, options):
         self.log = logging.getLogger(self.__class__.__name__)
-        self.log.setLevel(logging.ERROR)
+        self.log.setLevel(logging.DEBUG)
         # use DEBUG for extra info
         # self.log.setLevel(logging.DEBUG)
 

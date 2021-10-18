@@ -19,7 +19,7 @@ import re
 from ptsprojects.stack import get_stack
 from pybtp import btp
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 
 def sm_wid_hdl(wid, description, test_case_name, logs=True):

@@ -20,7 +20,7 @@ from pybtp import btp
 from pybtp.types import UUID
 from wid.gatt import gatt_wid_hdl as gen_wid_hdl, gatt_server_fetch_db
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 
 def gatt_wid_hdl(wid, description, test_case_name):

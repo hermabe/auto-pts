@@ -22,7 +22,7 @@ from pybtp.types import UUID, AdType, UriScheme
 from wid.gap import gap_wid_hdl as gen_wid_hdl, hdl_wid_139_mode1_lvl2, hdl_wid_139_mode1_lvl4
 from ptsprojects.stack import get_stack
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 
 def gap_wid_hdl(wid, description, test_case_name):

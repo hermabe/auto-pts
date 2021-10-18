@@ -22,7 +22,7 @@ from ptsprojects.stack import get_stack
 from pybtp import btp
 from pybtp.types import BTPError
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 
 def l2cap_wid_hdl(wid, description, test_case_name):

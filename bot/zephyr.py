@@ -186,7 +186,7 @@ class PtsInitArgs:
     def __init__(self, args):
         self.workspace = args["workspace"]
         self.bd_addr = args["bd_addr"]
-        self.enable_max_logs = args.get('enable_max_logs', False)
+        self.enable_max_logs = args.get('enable_max_logs', True)
         self.retry = args.get('retry', 0)
         self.stress_test = args.get('stress_test', False)
         self.test_cases = []

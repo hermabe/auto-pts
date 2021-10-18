@@ -24,7 +24,7 @@ from ptsprojects.stack import get_stack
 from pybtp import btp, types
 from pybtp.types import Prop, Perm, UUID, AdType, bdaddr_reverse
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 
 def gap_wid_hdl(wid, description, test_case_name, logs=True):

@@ -22,7 +22,7 @@ from pybtp.types import Prop, AdType
 from ptsprojects.stack import get_stack
 from wid.gap import gap_wid_hdl as gen_wid_hdl
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 
 def gap_wid_hdl(wid, description, test_case_name):

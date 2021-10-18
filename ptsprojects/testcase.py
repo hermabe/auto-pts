@@ -30,7 +30,7 @@ import queue
 from .utils import exec_iut_cmd
 from . import ptstypes
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 
 class MmiParser:

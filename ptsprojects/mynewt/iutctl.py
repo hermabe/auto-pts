@@ -23,7 +23,7 @@ from pybtp import defs
 from pybtp.types import BTPError
 from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT2PTY
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 MYNEWT = None
 IUT_LOG_FO = None
 SERIAL_BAUDRATE = 115200

@@ -31,7 +31,7 @@ from pybtp import defs
 from pybtp.types import BTPError
 from pybtp.parser import enc_frame, dec_hdr, dec_data, HDR_LEN
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 # BTP communication transport: unix domain socket file name
 BTP_ADDRESS = "/tmp/bt-stack-tester"

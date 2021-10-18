@@ -27,7 +27,7 @@ from pybtp import defs
 from pybtp.types import BTPError
 from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT2PTY, BTMON
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 ZEPHYR = None
 
 # qemu binary should be installed in shell PATH

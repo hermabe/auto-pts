@@ -49,7 +49,8 @@ from pybtp.types import BTPError, SynchError
 from utils import InterruptableThread
 from winutils import have_admin_rights
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
+
 
 RUNNING_TEST_CASE = {}
 TEST_CASE_DB = None
@@ -407,7 +408,7 @@ def init_pts_thread_entry(proxy, local_address, local_port, workspace_path,
             log("Set bd_addr PIXIT: %s for project: %s", bd_addr, project_name)
             proxy.update_pixit_param(project_name, "TSPX_bd_addr_iut", bd_addr)
 
-    proxy.enable_maximum_logging(enable_max_logs)
+    proxy.enable_maximum_logging(True)
 
 
 def init_pts(args, tc_db_table_name=None):
@@ -1020,7 +1021,7 @@ class CliParser(argparse.ArgumentParser):
                           help="Bluetooth device address of the IUT")
 
         self.add_argument("-d", "--debug-logs", dest="enable_max_logs",
-                          action='store_true', default=False,
+                          action='store_true', default=True,
                           help="Enable the PTS maximum logging. Equivalent "
                                "to running test case in PTS GUI using "
                                "'Run (Debug Logs)'")

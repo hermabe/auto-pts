@@ -20,7 +20,7 @@ import subprocess
 ADB = "adb"
 USE_ADB = True
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 
 
 def exec_iut_cmd(iut_cmd, wait=False, use_adb_shell=USE_ADB):

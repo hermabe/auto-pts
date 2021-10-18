@@ -33,7 +33,7 @@ n['auto_pts'] = {
     'project_path': '~/path/to/ncs/nrf',
     'workspace': 'nrf-v160',
     'board': 'nrf52',
-    'enable_max_logs': False,
+    'enable_max_logs': True,
     'retry': 2,
     'bd_addr': '',
     # 'ykush': '3',  # 1|2|3|a
@@ -130,7 +130,7 @@ z['auto_pts'] = {
     'project_path': '~/path/to/ncs/zephyr',
     'workspace': 'nrf-v160',
     'board': 'nrf52',
-    'enable_max_logs': False,
+    'enable_max_logs': True,
     'retry': 2,
     'bd_addr': '',
     # 'ykush': '3',  # 1|2|3|a

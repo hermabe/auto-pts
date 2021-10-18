@@ -51,7 +51,7 @@ import winutils
 import ptscontrol
 from config import SERVER_PORT
 
-log = logging.debug
+log = logging.warning; logging.getLogger("root").setLevel(logging.DEBUG)
 PROJECT_DIR = dirname(abspath(__file__))
 
 
