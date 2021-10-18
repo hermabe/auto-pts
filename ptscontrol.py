@@ -192,6 +192,8 @@ class PTSSender(win32com.server.connect.ConnectableServer):
                 logger.info("callback returned on_implicit_send, respose: %r", rsp)
 
         except xmlrpc.client.Fault as err:
+            import traceback
+            traceback.print_exc()
             logger.info("A fault occurred, code = %d, string = %s",
                         err.faultCode, err.faultString)
 
