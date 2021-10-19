@@ -146,25 +146,26 @@ class ClientCallback(PTSCallback):
 
         logger = logging.getLogger("{}.{}".format(
             self.__class__.__name__, self.on_implicit_send.__name__))
+        logger.setLevel(logging.DEBUG)
 
-        logger.info("*" * 20)
-        logger.info("BEGIN OnImplicitSend:")
-        logger.info("project_name: %s", project_name)
-        logger.info("wid: %s", wid)
-        logger.info("test_case_name: %s", test_case_name)
-        logger.info("description: %s", description)
-        logger.info("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
+        log("*" * 20)
+        log("BEGIN OnImplicitSend:")
+        log("project_name: %s", project_name)
+        log("wid: %s", wid)
+        log("test_case_name: %s", test_case_name)
+        log("description: %s", description)
+        log("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
 
         try:
             # XXX: 361 WID MESH sends tc name with leading white spaces
             test_case_name = test_case_name.lstrip()
 
-            logger.info("Calling test cases on_implicit_send")
+            log("Calling test cases on_implicit_send")
 
             testcase_response = RUNNING_TEST_CASE[test_case_name].on_implicit_send(project_name, wid, test_case_name,
                                                                                    description, style)
 
-            logger.info("test case returned on_implicit_send, response: %s",
+            log("test case returned on_implicit_send, response: %s",
                         testcase_response)
 
         except Exception as e:
@@ -174,8 +175,8 @@ class ClientCallback(PTSCallback):
             # exit does not work, cause app is blocked in PTS.RunTestCase?
             sys.exit("Exception in OnImplicitSend")
 
-        logger.info("END OnImplicitSend:")
-        logger.info("*" * 20)
+        log("END OnImplicitSend:")
+        log("*" * 20)
 
         return testcase_response
 
@@ -233,7 +234,8 @@ class CallbackThread(threading.Thread):
         log("Serving on port %s ...", self.port)
 
         self.server = SimpleXMLRPCServer(("", self.port),
-                                         allow_none=True, logRequests=False)
+                                         allow_none=True, logRequests=True)
+        self.server._send_traceback_header = True
         self.server.register_instance(self.callback)
         self.server.register_introspection_functions()
         self.server.serve_forever()

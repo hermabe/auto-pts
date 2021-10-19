@@ -172,7 +172,7 @@ class PTSSender(win32com.server.connect.ConnectableServer):
                 rsp = self._callback.on_implicit_send(project_name, wid,
                                                       test_case, description,
                                                       style)
-
+                logger.info(f"rsp = {rsp}")
                 # Don't block xml-rpc
                 if rsp == "WAIT":
                     rsp = self._callback.get_pending_response(
