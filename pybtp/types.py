@@ -109,6 +109,7 @@ class UUID:
     battery_level = '2A19'
     date_of_birth = '2A85'
     gender = '2A8C'
+    central_address_resolution = '2AA6'
     VND16_1 = 'AA50'
     VND16_2 = 'AA51'
     VND16_3 = 'AA52'
