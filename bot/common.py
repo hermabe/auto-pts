@@ -125,6 +125,8 @@ class BotClient(Client):
         autoptsclient.init_logging('_' + '_'.join(str(x) for x in _args[config_default].cli_port))
 
         for config, value in list(iut_config.items()):
+            if "test_cases" in value and "no_test_case" in value["test_cases"]:
+                value["test_cases"] = []
             if 'test_cases' not in value:
                 # Rename default config
                 _args[config] = _args.pop(config_default)
@@ -140,6 +142,8 @@ class BotClient(Client):
                 _args[config_default].excluded += _args[config].test_cases
 
         for config, value in list(iut_config.items()):
+            if not _args[config].test_cases:
+                continue
             self.apply_config(_args[config], config, value)
 
             status_count, results_dict, regressions = self.start(_args[config])
