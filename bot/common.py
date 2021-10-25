@@ -797,33 +797,46 @@ def update_repos(project_path, git_config):
     return repos_dict
 
 
-def get_free_device():
+def get_free_device(board=None):
     tty = None
     jlink = None
-    debuggers = subprocess.Popen('nrfjprog --com',
+
+    snr_initials_for_debugger = {
+        "nrf52": '68',
+        "nrf53": '96'
+    }
+
+    com_index_for_debugger = {
+        "nrf52": '00',
+        "nrf53": '04'
+    }
+
+    debugger_snrs = subprocess.Popen('nrfjprog -i',
                                  shell=True,
                                  stdout=subprocess.PIPE
                                  ).stdout.read().decode()
 
-    if sys.platform == "win32":
-        reg = r"[0-9]+\s+COM[0-9]+(?=\s+.+)"
-    else:
-        reg = r"[0-9]+\s+/dev/\w+(?=\s+.+)"
+    print('debugger_snrs', debugger_snrs)
+    debugger_snrs = debugger_snrs.split()
 
-    debuggers = re.findall(reg, debuggers)
-    for d in debuggers:
-        d_info = d.split()
-        if len(d_info) < 2:
+    print('debugger_snrs', debugger_snrs)
+    for d_snr in debugger_snrs:
+        if d_snr[:2] != snr_initials_for_debugger[board]:
             continue
 
-        srn = d_info[0]
-        dev = d_info[1]
+        d_tty = subprocess.Popen('ls -l /dev/serial/by-id' +
+                                    '/usb-SEGGER_J-Link_000' + d_snr +
+                                    '-if' + com_index_for_debugger[board],
+                                    shell=True,
+                                    stdout=subprocess.PIPE
+                                    ).stdout.read().decode()
+        reg = "(?=tty).+$"
+        d_tty = re.findall(reg, d_tty)
 
-        if srn not in devices_in_use:
-            devices_in_use.append(srn)
-            tty = dev
-            jlink = srn
-            break
+        if d_snr not in devices_in_use:
+            devices_in_use.append(d_snr)
+            jlink = d_snr
+            tty = '/dev/' + d_tty[0]
 
     if not tty:
         sys.exit('No free device found!')

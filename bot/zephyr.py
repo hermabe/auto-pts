@@ -49,11 +49,11 @@ def check_call(cmd, env=None, cwd=None, shell=True):
     return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable=executable)
 
 
-def build_and_flash(zephyr_wd, board, tty, conf_file=None):
+def build_and_flash(zephyr_wd, board, jlink_srn, conf_file=None):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
     :param board: IUT
-    :param tty path
+    :param jlink_srn
     :param conf_file: configuration file to be used
     """
     logging.debug("%s: %s %s %s", build_and_flash.__name__, zephyr_wd,
@@ -71,8 +71,7 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
         cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
 
     check_call(cmd, cwd=tester_dir)
-    check_call(['west', 'flash', '--skip-rebuild',
-                '--board-dir', tty], cwd=tester_dir)
+    check_call(['west', 'flash', '--recover', '--erase', '--skip-rebuild'], cwd=tester_dir)
 
 
 def flush_serial(tty):
@@ -292,7 +291,7 @@ def main(cfg):
         autoptsclient.board_power(args['ykush'], True)
         time.sleep(1)
 
-    args['tty_file'], jlink_srn = bot.common.get_free_device()
+    args['tty_file'], jlink_srn = bot.common.get_free_device(args['board'])
 
     try:
         summary, results, descriptions, regressions = \

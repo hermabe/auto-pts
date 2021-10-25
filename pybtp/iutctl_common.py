@@ -245,10 +245,12 @@ class BTPWorker(BTPSocket):
 
 
 def get_debugger_snr(tty_file):
-    debuggers = subprocess.Popen('nrfjprog --com',
+    debuggers = subprocess.Popen('nrfjprog -i',
                                  shell=True,
                                  stdout=subprocess.PIPE
                                  ).stdout.read().decode()
+
+    debuggers = debuggers.split()
 
     if sys.platform == "win32":
         COM = "COM" + str(int(tty_file["/dev/ttyS".__len__():]) + 1)
@@ -257,7 +259,7 @@ def get_debugger_snr(tty_file):
         reg = "[0-9]+(?=\s+" + tty_file + ".+)"
 
     try:
-        return re.findall(reg, debuggers)[0]
+        return debuggers[0]
     except:
         sys.exit("No debuggers associated with the device found")
 
