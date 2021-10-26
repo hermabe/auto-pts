@@ -24,7 +24,7 @@ import serial
 
 from pybtp import defs
 from pybtp.types import BTPError
-from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, BTMON, RTT, get_debugger_snr
+from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, BTMON, RTT
 
 log = logging.debug
 ZEPHYR = None
@@ -66,7 +66,7 @@ class ZephyrCtl:
         self.native = None
 
         if self.tty_file and args.board_name:  # DUT is a hardware board, not QEMU
-            self.debugger_snr = get_debugger_snr(self.tty_file)
+            self.debugger_snr = args.jlink_srn
             self.board = Board(args.board_name, args.kernel_image, self)
         else:  # DUT is QEMU or a board that won't be reset
             self.board = None
@@ -267,11 +267,13 @@ class Board:
     """HW DUT board"""
 
     nrf52 = "nrf52"
-    reel = "reel_board"
+    nrf53 = "nrf53"
+    reel  = "reel_board"
 
     # for command line options
     names = [
         nrf52,
+        nrf53,
         reel
     ]
 
@@ -322,7 +324,8 @@ class Board:
     def get_reset_cmd(self):
         """Return reset command for a board"""
         reset_cmd_getters = {
-            self.nrf52: self._get_reset_cmd_nrf52,
+            self.nrf52: self._get_reset_cmd_nrf5x,
+            self.nrf53: self._get_reset_cmd_nrf5x,
             self.reel: self._get_reset_cmd_reel
         }
 
@@ -332,13 +335,13 @@ class Board:
 
         return reset_cmd
 
-    def _get_reset_cmd_nrf52(self):
-        """Return reset command for nRF52 DUT
+    def _get_reset_cmd_nrf5x(self):
+        """Return reset command for nRF52 and nRF53 DUT
 
         Dependency: nRF5x command line tools
 
         """
-        return 'nrfjprog -f nrf52 -r -s ' + self.iutctl.debugger_snr
+        return 'nrfjprog -r -s ' + self.iutctl.debugger_snr
 
     @staticmethod
     def _get_reset_cmd_reel():
