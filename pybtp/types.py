@@ -97,6 +97,7 @@ class UriScheme:
 class UUID:
     gap_svc = '1800'
     gatt_svc = '1801'
+    database_hash = '2803'
     CEP = '2900'
     CUD = '2901'
     CCC = '2902'
