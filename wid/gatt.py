@@ -1815,7 +1815,7 @@ def hdl_wid_153(desc):
 
     hdl = MMI.args[0]
 
-    btp.gattc_write(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl, '01')
+    btp.gattc_write(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl, '03')
 
     return True
 
