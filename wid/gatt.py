@@ -1820,6 +1820,14 @@ def hdl_wid_153(desc):
     return True
 
 
+def hdl_wid_165(desc):
+    """
+    Please delete the bond if IUT was bonded previously.
+    Please do not enable Service Changed Indication.
+    """
+    return True
+
+
 def hdl_wid_304(desc):
     MMI.reset()
     MMI.parse_description(desc)
