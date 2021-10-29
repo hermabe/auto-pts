@@ -1817,6 +1817,11 @@ def hdl_wid_304(desc):
     return bool(data in val)
 
 
+def hdl_wid_308(desc):
+    """Please do not send an ATT_Handle_value_Multiple_notification to Lower tester until timeout(30s)."""
+    return True
+
+
 def hdl_wid_400(desc):
     return True
 
