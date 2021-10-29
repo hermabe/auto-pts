@@ -1872,6 +1872,12 @@ def hdl_wid_163(desc):
     return True
 
 
+def hdl_wid_164(desc):
+    """Please send Read By Type request on Bearer 1 containing the UUID of the Database Hash characteristic"""
+    btp.gattc_read_uuid(btp.pts_addr_type_get(), btp.pts_addr_get(), '0001', 'FFFF', UUID.database_hash)
+    return True
+
+
 def hdl_wid_165(desc):
     """
     Please delete the bond if IUT was bonded previously.
