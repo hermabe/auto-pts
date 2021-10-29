@@ -1805,6 +1805,20 @@ def hdl_wid_152(desc):
 
     return False
 
+def hdl_wid_153(desc):
+    """
+    Please write to client support feature handle = '0015'O to enable EATT and Robust Caching.
+    Discover all characteristics if needed.
+    """
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+
+    btp.gattc_write(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl, '01')
+
+    return True
+
 
 def hdl_wid_304(desc):
     MMI.reset()
