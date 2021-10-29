@@ -1819,8 +1819,8 @@ def hdl_wid_153(desc):
 
     return True
 
-def hdl_wid_161(desc):
-    """Please send Read request on ATT over LE using handle '00BC'O"""
+def _read_request(desc):
+    """Please send Read request on ATT over LE using handle 'XXXX'O"""
     MMI.reset()
     MMI.parse_description(desc)
 
@@ -1829,6 +1829,14 @@ def hdl_wid_161(desc):
     btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
 
     return True
+
+
+def hdl_wid_161(desc):
+    return _read_request(desc)
+
+
+def hdl_wid_163(desc):
+    return _read_request(desc)
 
 
 def hdl_wid_165(desc):
