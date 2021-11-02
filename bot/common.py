@@ -140,6 +140,10 @@ class BotClient(Client):
                 _args[config_default].excluded += _args[config].test_cases
 
         for config, value in list(iut_config.items()):
+            if 'test_cases' in value and 'no_test_case' in value['test_cases']:
+                # Do not build overlays with no test cases
+                continue
+
             self.apply_config(_args[config], config, value)
 
             status_count, results_dict, regressions = self.start(_args[config])
