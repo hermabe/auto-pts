@@ -867,11 +867,11 @@ def gattc_read_multiple_var(bd_addr_type, bd_addr, *hdls):
     hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
     hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
                                                  hdls_byte_table[1::2])])
-    hdls_ba = binascii.unhexlify(bytearray(hdls_swp))
+    hdls_ba = binascii.unhexlify(hdls_swp)
 
-    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
-    data_ba.extend(chr(len(hdls)))
+    data_ba.extend(chr(len(hdls)).encode('utf-8'))
     data_ba.extend(hdls_ba)
 
     iutctl.btp_socket.send(*GATTC['read_multiple_var'], data=data_ba)
