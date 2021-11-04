@@ -1730,6 +1730,21 @@ def hdl_wid_139(desc):
     return bool(read_val == COMPARED_VALUE[0])
 
 
+def hdl_wid_150(desc):
+    """
+    Please send an ATT_Write_Request to Client Support Features handle = 'XXXX'O to enable Multiple Handle Value Notifications.
+    Discover all characteristics if needed.
+    """
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+
+    btp.gattc_write(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl, '04')
+
+    return True
+
+
 def hdl_wid_151(desc):
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
