@@ -1705,6 +1705,9 @@ def hdl_wid_142(desc):
 
     btp.gattc_write(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
                     hdl, '02', 1)
+
+    btp.gattc_write_rsp()
+
     return True
 
 
