@@ -1860,6 +1860,18 @@ def hdl_wid_161(desc):
     return True
 
 
+def hdl_wid_163(desc):
+    """Please send Read request on EATT over LE using handle 'XXXX'O"""
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+
+    btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
+
+    return True
+
+
 def hdl_wid_165(desc):
     """
     Please delete the bond if IUT was bonded previously.
