@@ -3,6 +3,7 @@
 #
 # Copyright (c) 2021, Intel Corporation.
 # Copyright (c) 2021, Codecoup.
+# Copyright (c) 2021, Nordic Semiconductor ASA.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -118,14 +119,20 @@ def get_device_list():
     return device_list
 
 
-def get_free_device():
+def get_free_device(board=None):
     """Returns tty path and jlink serial number of a free device."""
     devices = get_device_list()
 
-    for dev in devices.keys():
-        if dev not in devices_in_use:
-            devices_in_use.append(dev)
-            return dev, devices[dev]
+    SNR_PREFIX_FOR_BOARD = {
+        'nrf52': '68',
+        'nrf53': '96',
+        None: ''
+    }
+
+    for tty, snr in devices.items():
+        if tty not in devices_in_use and snr.startswith(SNR_PREFIX_FOR_BOARD[board]):
+            devices_in_use.append(tty)
+            return tty, snr
 
     return None, None
 
