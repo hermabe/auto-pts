@@ -18,6 +18,7 @@
 
 import logging
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -96,6 +97,18 @@ def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
             config.write("{}={}\n".format(k, v))
 
     os.chdir(cwd)
+
+def apply_overlay_file(zephyr_wd, overlay_file, cfg_name):
+    """Copies overlay file to Zephyr source path
+    :param zephyr_wd: Zephyr source path
+    :param base_conf: base configuration file
+    :param cfg_name: new configuration file name
+    :param overlay: defines changes to be applied
+    :return: None
+    """
+    tester_app_dir = Path(zephyr_wd, "tests", "bluetooth", "tester")
+
+    shutil.copyfile(overlay_file, tester_app_dir / cfg_name)
 
 
 autopts2board = {
@@ -233,6 +246,8 @@ class ZephyrBotClient(bot.common.BotClient):
         if 'overlay' in value:
             apply_overlay(args.project_path, self.config_default, config,
                           value['overlay'])
+        if 'overlay_file' in value:
+            apply_overlay_file(args.project_path, value['overlay_file'], config)
 
         log("TTY path: %s" % args.tty_file)
 
