@@ -142,6 +142,8 @@ class BotClient(Client):
                 _args[config_default].excluded += _args[config].test_cases
 
         for config, value in list(iut_config.items()):
+            if not 'test_cases' in value or 'no_test_case' in value['test_cases']:
+                continue
             self.apply_config(_args[config], config, value)
 
             status_count, results_dict, regressions = self.start(_args[config])
